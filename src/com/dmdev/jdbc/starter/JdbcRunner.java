@@ -2,9 +2,9 @@ package com.dmdev.jdbc.starter;
 
 import com.dmdev.jdbc.starter.util.ConnectionManager;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +15,30 @@ public class JdbcRunner {
 //        Long flightId = 2L; //SQL Inject
 //        final var result = getTicketsByFlightId(flightId);
 //        System.out.println(result);
-        var result = getFlightsBetween(LocalDate.of(2020, 10, 1).atStartOfDay(), LocalDateTime.now());
-        System.out.println(result);
+
+//        var result = getFlightsBetween(LocalDate.of(2020, 10, 1).atStartOfDay(), LocalDateTime.now());
+//        System.out.println(result);
+        checkMetaData();
+    }
+
+    private static void checkMetaData() throws SQLException {
+        try (var connection = ConnectionManager.open()) {
+            var metaData = connection.getMetaData();
+            var catalogs = metaData.getCatalogs();
+            while (catalogs.next()) {
+                var catalog = catalogs.getString(1);
+                var schemas = metaData.getSchemas();
+                while (schemas.next()) {
+                    var schemasString = schemas.getString("TABLE_SCHEM");
+                    var tables = metaData.getTables(catalog, schemasString, "%", new String[] {"TABLE"});
+                    if(schemasString.equals("public")){
+                        while (tables.next()){
+                            System.out.println(tables.getString("TABLE_NAME"));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private static List<Long> getFlightsBetween(LocalDateTime start, LocalDateTime end) throws SQLException {
@@ -28,7 +50,7 @@ public class JdbcRunner {
         List<Long> result = new ArrayList<>();
 
         try (var connection = ConnectionManager.open();
-            var preparedStatement = connection.prepareStatement(sql)) {
+             var preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setFetchSize(50);
             preparedStatement.setQueryTimeout(10);
@@ -41,12 +63,11 @@ public class JdbcRunner {
             System.out.println(preparedStatement);
 
             final var resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 result.add(resultSet.getLong("id"));
             }
         }
         return result;
-
     }
 
     private static List<Long> getTicketsByFlightId(Long flightId) throws SQLException {
