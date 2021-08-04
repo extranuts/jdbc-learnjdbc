@@ -17,7 +17,11 @@ public class TransactionRunner {
         try {
             connection = ConnectionManager.open();
             deleteFlightStatement = connection.prepareStatement(deleteFlightSql);
+<<<<<<< HEAD
             deleteTicketsStatement = connection.prepareStatement(deleteTicketsSql);
+=======
+            deleteTicketsStatement = connection.prepareStatement(deleteTicketsSql)
+>>>>>>> origin/master
 
             connection.setAutoCommit(false);
 
