@@ -12,7 +12,7 @@ import java.util.List;
 public class JdbcRunner {
     public static void main(String[] args) throws SQLException {
 
-        String flightId = "2 OR 1 = 1"; //SQL Inject
+        String flightId = "2 OR 1 = 1; DROP TABLE info;"; //SQL Inject
         final var result = getTicketsByFlightId(flightId);
         System.out.println(result);
 
