@@ -1,4 +1,6 @@
-.idea*
 .gitignore
 jdbc-learn.iml
-.out*
+/out
+/.idea
+out
+
