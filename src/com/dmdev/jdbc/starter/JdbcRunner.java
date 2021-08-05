@@ -2,7 +2,6 @@ package com.dmdev.jdbc.starter;
 
 import com.dmdev.jdbc.starter.util.ConnectionManager;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -18,11 +17,15 @@ public class JdbcRunner {
 
 //        var result = getFlightsBetween(LocalDate.of(2020, 10, 1).atStartOfDay(), LocalDateTime.now());
 //        System.out.println(result);
-        checkMetaData();
+        try {
+            checkMetaData();
+        } finally {
+            ConnectionManager.closePool();
+        }
     }
 
     private static void checkMetaData() throws SQLException {
-        try (var connection = ConnectionManager.open()) {
+        try (var connection = ConnectionManager.get()) {
             var metaData = connection.getMetaData();
             var catalogs = metaData.getCatalogs();
             while (catalogs.next()) {
@@ -49,7 +52,7 @@ public class JdbcRunner {
                 """;
         List<Long> result = new ArrayList<>();
 
-        try (var connection = ConnectionManager.open();
+        try (var connection = ConnectionManager.get();
              var preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setFetchSize(50);
@@ -77,7 +80,7 @@ public class JdbcRunner {
                 WHERE flight_id = ? 
                 """;
         List<Long> result = new ArrayList<>();
-        try (var connection = ConnectionManager.open();
+        try (var connection = ConnectionManager.get();
              final var preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, flightId);
             final var resultSet = preparedStatement.executeQuery();

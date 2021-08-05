@@ -6,9 +6,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class BlobRunner {
@@ -24,7 +21,7 @@ public class BlobRunner {
                 FROM  aircraft
                 WHERE id = ?
                 """;
-        try (var connection = ConnectionManager.open();
+        try (var connection = ConnectionManager.get();
              var preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, 1);
             var resultSet = preparedStatement.executeQuery();
@@ -48,7 +45,7 @@ public class BlobRunner {
                 SET image = ?
                 WHERE id = 1
                 """;
-        try (var connection = ConnectionManager.open();
+        try (var connection = ConnectionManager.get();
              var preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setBytes(1, Files.readAllBytes
                     (Path.of("resources", "b777.jpg")));
@@ -66,7 +63,7 @@ public class BlobRunner {
 //                SET image = ?
 //                WHERE id = 1
 //                """;
-//        try (var connection = ConnectionManager.open();
+//        try (var connection = ConnectionManager.get();
 //             var preparedStatement = connection.prepareStatement(sql)) {
 //            connection.setAutoCommit(false);
 //
