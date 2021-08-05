@@ -33,9 +33,9 @@ public class JdbcRunner {
                 var schemas = metaData.getSchemas();
                 while (schemas.next()) {
                     var schemasString = schemas.getString("TABLE_SCHEM");
-                    var tables = metaData.getTables(catalog, schemasString, "%", new String[] {"TABLE"});
-                    if(schemasString.equals("public")){
-                        while (tables.next()){
+                    var tables = metaData.getTables(catalog, schemasString, "%", new String[]{"TABLE"});
+                    if (schemasString.equals("public")) {
+                        while (tables.next()) {
                             System.out.println(tables.getString("TABLE_NAME"));
                         }
                     }
@@ -77,7 +77,7 @@ public class JdbcRunner {
         String sql = """
                 SELECT id
                 FROM ticket
-                WHERE flight_id = ? 
+                WHERE flight_id = ?
                 """;
         List<Long> result = new ArrayList<>();
         try (var connection = ConnectionManager.get();

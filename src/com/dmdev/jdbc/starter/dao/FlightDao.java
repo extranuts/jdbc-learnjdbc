@@ -25,7 +25,10 @@ public class FlightDao implements Dao<Long, Flight> {
             FROM flight
             WHERE id = ?
             """;
-    private FlightDao(){}
+
+    private FlightDao() {
+    }
+
     public static FlightDao getInstance() {
         return INSTANCE;
     }
@@ -44,6 +47,7 @@ public class FlightDao implements Dao<Long, Flight> {
     public void update(Flight ticket) {
 
     }
+
     @Override
     public Optional<Flight> findById(Long id) {
         try (var connection = ConnectionManager.get()) {
@@ -55,11 +59,11 @@ public class FlightDao implements Dao<Long, Flight> {
 
     public Optional<Flight> findById(Long id, Connection connection) {
         try (var preparedStatement = connection.prepareStatement(FIND_BY_ID_SQL)) {
-            preparedStatement.setLong(1,id);
+            preparedStatement.setLong(1, id);
 
             var resultSet = preparedStatement.executeQuery();
             Flight flight = null;
-            if (resultSet.next()){
+            if (resultSet.next()) {
                 flight = new Flight(
                         resultSet.getLong("id"),
                         resultSet.getString("flight_no"),

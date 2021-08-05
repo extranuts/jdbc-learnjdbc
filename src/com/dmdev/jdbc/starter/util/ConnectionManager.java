@@ -11,20 +11,20 @@ import java.util.concurrent.BlockingQueue;
 
 public final class ConnectionManager {
 
+    public static final Integer DEFAULT_POOL_SIZE = 10;
     private static final String USERNAME_KEY = "db.username";
     private static final String PASSWORD_KEY = "db.password";
     private static final String URL_KEY = "db.url";
     private static final String POOL_SIZE_KEY = "db.pool.size";
-    public static final Integer DEFAULT_POOL_SIZE = 10;
     public static BlockingQueue<Connection> pool;
     public static List<Connection> sourceConnections;
-
-    private ConnectionManager() {
-    }
 
     static {
         loadDriver();
         initConnectionPool();
+    }
+
+    private ConnectionManager() {
     }
 
     private static void initConnectionPool() {

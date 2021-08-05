@@ -6,7 +6,9 @@ import com.dmdev.jdbc.starter.entity.Ticket;
 import com.dmdev.jdbc.starter.exceptions.DaoException;
 import com.dmdev.jdbc.starter.util.ConnectionManager;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +17,6 @@ import static java.util.stream.Collectors.joining;
 
 public class TicketDao implements Dao<Long, Ticket> {
 
-    private static final TicketDao INSTANCE = new TicketDao();
     public static final String DELETE_SQL = """
             DELETE FROM ticket
             WHERE id =?
@@ -54,15 +55,20 @@ public class TicketDao implements Dao<Long, Ticket> {
     public static final String FIND_BY_ID_SQL = FIND_ALL_SQL + """
             WHERE ticket.id = ?
             """;
+    private static final TicketDao INSTANCE = new TicketDao();
     private final FlightDao flightDao = FlightDao.getInstance();
 
     private TicketDao() {
     }
 
-    public List<Ticket> findAll(TicketFilter ticketFilter){
+    public static TicketDao getInstance() {
+        return INSTANCE;
+    }
+
+    public List<Ticket> findAll(TicketFilter ticketFilter) {
         List<Object> parameters = new ArrayList<>();
         List<String> whereSql = new ArrayList<>();
-        if (ticketFilter.seatNo() != null){
+        if (ticketFilter.seatNo() != null) {
             whereSql.add("seat_no LIKE ?");
             parameters.add("%" + ticketFilter.seatNo() + "%");
         }
@@ -80,7 +86,7 @@ public class TicketDao implements Dao<Long, Ticket> {
         try (var connection = ConnectionManager.get();
              var preparedStatement = connection.prepareStatement(sql)) {
             for (int i = 0; i < parameters.size(); i++) {
-                preparedStatement.setObject(i+1, parameters.get(i));
+                preparedStatement.setObject(i + 1, parameters.get(i));
             }
             System.out.println(preparedStatement);
             var resultSet = preparedStatement.executeQuery();
@@ -94,7 +100,7 @@ public class TicketDao implements Dao<Long, Ticket> {
         }
     }
 
-    public List<Ticket> findAll(){
+    public List<Ticket> findAll() {
         try (var connection = ConnectionManager.get();
              var preparedStatement = connection.prepareStatement(FIND_ALL_SQL)) {
             var resultSet = preparedStatement.executeQuery();
@@ -113,13 +119,13 @@ public class TicketDao implements Dao<Long, Ticket> {
              var preparedStatement = connection.prepareStatement(FIND_BY_ID_SQL)) {
             preparedStatement.setLong(1, id);
             var resultSet = preparedStatement.executeQuery();
-            Ticket ticket =null;
-            if(resultSet.next()){
+            Ticket ticket = null;
+            if (resultSet.next()) {
                 ticket = buildTicket(resultSet);
             }
             return Optional.ofNullable(ticket);
         } catch (SQLException throwables) {
-            throw  new DaoException(throwables);
+            throw new DaoException(throwables);
         }
     }
 
@@ -128,7 +134,7 @@ public class TicketDao implements Dao<Long, Ticket> {
              var preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
             preparedStatement.setString(1, ticket.getPassengerNo());
             preparedStatement.setString(2, ticket.getPassengerName());
-            preparedStatement.setLong(3,ticket.getFlight().id());
+            preparedStatement.setLong(3, ticket.getFlight().id());
             preparedStatement.setString(4, ticket.getSeatNo());
             preparedStatement.setBigDecimal(5, ticket.getCost());
             preparedStatement.setLong(6, ticket.getId());
@@ -190,9 +196,5 @@ public class TicketDao implements Dao<Long, Ticket> {
                 resultSet.getString("seat_no"),
                 resultSet.getBigDecimal("cost")
         );
-    }
-
-    public static TicketDao getInstance() {
-        return INSTANCE;
     }
 }

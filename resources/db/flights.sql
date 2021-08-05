@@ -6,9 +6,9 @@
 --                      city (город)
 CREATE TABLE airport
 (
-    code CHAR(3) PRIMARY KEY ,
-    country VARCHAR(256) NOT NULL ,
-    city VARCHAR(128) NOT NULL
+    code    CHAR(3) PRIMARY KEY,
+    country VARCHAR(256) NOT NULL,
+    city    VARCHAR(128) NOT NULL
 );
 
 -- aircraft (самолет)
@@ -16,7 +16,7 @@ CREATE TABLE airport
 --  	model (модель самолета - unique)
 CREATE TABLE aircraft
 (
-    id SERIAL PRIMARY KEY ,
+    id    SERIAL PRIMARY KEY,
     model VARCHAR(128) NOT NULL
 );
 
@@ -26,7 +26,7 @@ CREATE TABLE aircraft
 CREATE TABLE seat
 (
     aircraft_id INT REFERENCES aircraft (id),
-    seat_no VARCHAR(4) NOT NULL ,
+    seat_no     VARCHAR(4) NOT NULL,
     PRIMARY KEY (aircraft_id, seat_no)
 );
 
@@ -41,14 +41,14 @@ CREATE TABLE seat
 --     status (статус рейса: cancelled, arrived, departed, scheduled)
 CREATE TABLE flight
 (
-    id BIGSERIAL PRIMARY KEY ,
-    flight_no VARCHAR(16) NOT NULL ,
-    departure_date TIMESTAMP NOT NULL ,
-    departure_airport_code CHAR(3) REFERENCES airport(code) NOT NULL ,
-    arrival_date TIMESTAMP NOT NULL ,
-    arrival_airport_code CHAR(3) REFERENCES airport(code) NOT NULL ,
-    aircraft_id INT REFERENCES aircraft (id) NOT NULL ,
-    status VARCHAR(32) NOT NULL
+    id                     BIGSERIAL PRIMARY KEY,
+    flight_no              VARCHAR(16)                       NOT NULL,
+    departure_date         TIMESTAMP                         NOT NULL,
+    departure_airport_code CHAR(3) REFERENCES airport (code) NOT NULL,
+    arrival_date           TIMESTAMP                         NOT NULL,
+    arrival_airport_code   CHAR(3) REFERENCES airport (code) NOT NULL,
+    aircraft_id            INT REFERENCES aircraft (id)      NOT NULL,
+    status                 VARCHAR(32)                       NOT NULL
 );
 
 -- ticket (билет на самолет)
@@ -60,12 +60,12 @@ CREATE TABLE flight
 --  	cost (стоимость)
 CREATE TABLE ticket
 (
-    id BIGSERIAL PRIMARY KEY ,
-    passenger_no VARCHAR(32) NOT NULL ,
-    passenger_name VARCHAR(128) NOT NULL ,
-    flight_id BIGINT REFERENCES flight (id) NOT NULL ,
-    seat_no VARCHAR(4) NOT NULL,
-    cost NUMERIC(8, 2) NOT NULL
+    id             BIGSERIAL PRIMARY KEY,
+    passenger_no   VARCHAR(32)                   NOT NULL,
+    passenger_name VARCHAR(128)                  NOT NULL,
+    flight_id      BIGINT REFERENCES flight (id) NOT NULL,
+    seat_no        VARCHAR(4)                    NOT NULL,
+    cost           NUMERIC(8, 2)                 NOT NULL
 --     UNIQUE (flight_id, seat_no)
 );
 
@@ -77,8 +77,10 @@ from ticket
 where seat_no = 'B1'
   and flight_id = 5;
 
-select count(distinct flight_id) from ticket;
-select count(*) from ticket;
+select count(distinct flight_id)
+from ticket;
+select count(*)
+from ticket;
 -- 9 / 55
 -- 55 / 55 = 1
 -- 55 / 55 = 1
@@ -103,16 +105,15 @@ from aircraft
 
 insert into flight (flight_no, departure_date, departure_airport_code, arrival_date, arrival_airport_code, aircraft_id,
                     status)
-values
-('MN3002', '2020-06-14T14:30', 'MNK', '2020-06-14T18:07', 'LDN', 1, 'ARRIVED'),
-('MN3002', '2020-06-16T09:15', 'LDN', '2020-06-16T13:00', 'MNK', 1, 'ARRIVED'),
-('BC2801', '2020-07-28T23:25', 'MNK', '2020-07-29T02:43', 'LDN', 2, 'ARRIVED'),
-('BC2801', '2020-08-01T11:00', 'LDN', '2020-08-01T14:15', 'MNK', 2, 'DEPARTED'),
-('TR3103', '2020-05-03T13:10', 'MSK', '2020-05-03T18:38', 'BSL', 3, 'ARRIVED'),
-('TR3103', '2020-05-10T07:15', 'BSL', '2020-05-10T012:44', 'MSK', 3, 'CANCELLED'),
-('CV9827', '2020-09-09T18:00', 'MNK', '2020-09-09T19:15', 'MSK', 4, 'SCHEDULED'),
-('CV9827', '2020-09-19T08:55', 'MSK', '2020-09-19T10:05', 'MNK', 4, 'SCHEDULED'),
-('QS8712', '2020-12-18T03:35', 'MNK', '2020-12-18T06:46', 'LDN', 2, 'ARRIVED');
+values ('MN3002', '2020-06-14T14:30', 'MNK', '2020-06-14T18:07', 'LDN', 1, 'ARRIVED'),
+       ('MN3002', '2020-06-16T09:15', 'LDN', '2020-06-16T13:00', 'MNK', 1, 'ARRIVED'),
+       ('BC2801', '2020-07-28T23:25', 'MNK', '2020-07-29T02:43', 'LDN', 2, 'ARRIVED'),
+       ('BC2801', '2020-08-01T11:00', 'LDN', '2020-08-01T14:15', 'MNK', 2, 'DEPARTED'),
+       ('TR3103', '2020-05-03T13:10', 'MSK', '2020-05-03T18:38', 'BSL', 3, 'ARRIVED'),
+       ('TR3103', '2020-05-10T07:15', 'BSL', '2020-05-10T012:44', 'MSK', 3, 'CANCELLED'),
+       ('CV9827', '2020-09-09T18:00', 'MNK', '2020-09-09T19:15', 'MSK', 4, 'SCHEDULED'),
+       ('CV9827', '2020-09-19T08:55', 'MSK', '2020-09-19T10:05', 'MNK', 4, 'SCHEDULED'),
+       ('QS8712', '2020-12-18T03:35', 'MNK', '2020-12-18T06:46', 'LDN', 2, 'ARRIVED');
 
 insert into ticket (passenger_no, passenger_name, flight_id, seat_no, cost)
 values ('112233', 'Иван Иванов', 1, 'A1', 200),
@@ -216,7 +217,7 @@ where aircraft_id = 1
                                on f.id = t.flight_id
                  where f.flight_no = 'MN3002'
                    and f.departure_date::date = '2020-06-14'
-                     and s.seat_no = t.seat_no);
+                   and s.seat_no = t.seat_no);
 
 -- 3 variant
 select aircraft_id, s.seat_no
@@ -241,10 +242,10 @@ order by (f.arrival_date - f.departure_date) DESC;
 -- 6.	Какая максимальная и минимальная продолжительность перелетов между Минском и Лондоном
 -- и сколько было всего таких перелетов?
 
-select
-    first_value(f.arrival_date - f.departure_date) over (order by (f.arrival_date - f.departure_date) desc) max_value,
-    first_value(f.arrival_date - f.departure_date) over (order by (f.arrival_date - f.departure_date)) min_value,
-    count(*) OVER()
+select first_value(f.arrival_date - f.departure_date)
+       over (order by (f.arrival_date - f.departure_date) desc)                                           max_value,
+       first_value(f.arrival_date - f.departure_date) over (order by (f.arrival_date - f.departure_date)) min_value,
+       count(*) OVER ()
 from flight f
          join airport a
               on a.code = f.arrival_airport_code
@@ -279,7 +280,7 @@ from (
 -- Отобразить разницу в стоимости между текущим и ближайшими в отсортированном списке маршрутами
 
 select t1.*,
-       COALESCE(lead(t1.sum_cost) OVER(order by t1.sum_cost), t1.sum_cost) - t1.sum_cost
+       COALESCE(lead(t1.sum_cost) OVER (order by t1.sum_cost), t1.sum_cost) - t1.sum_cost
 from (
          select t.flight_id,
                 sum(t.cost) sum_cost
@@ -289,9 +290,15 @@ from (
 
 
 
-values (1, '2'), (3, '4'), (5, '6'), (7, '8')
-except
-values (1, '2'), (2, '4'), (5, '6'), (7, '9');
+values (1, '2'),
+       (3, '4'),
+       (5, '6'),
+       (7, '8')
+    except
+values (1, '2'),
+       (2, '4'),
+       (5, '6'),
+       (7, '9');
 
 
 select id

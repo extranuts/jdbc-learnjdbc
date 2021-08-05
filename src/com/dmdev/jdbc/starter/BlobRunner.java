@@ -34,8 +34,6 @@ public class BlobRunner {
     }
 
 
-
-
     /**
      * Postgres BLob Clob save image
      */

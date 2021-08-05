@@ -4,7 +4,7 @@ package com.dmdev.jdbc.starter.dao;
 import java.util.List;
 import java.util.Optional;
 
-public interface Dao<K, E>{
+public interface Dao<K, E> {
 
     boolean delete(K id);
 

@@ -1,7 +1,6 @@
 package com.dmdev.jdbc.starter.util;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 public final class PropertiesUtil {
@@ -12,7 +11,10 @@ public final class PropertiesUtil {
         loadProperties();
     }
 
-    public static String get(String key){
+    private PropertiesUtil() {
+    }
+
+    public static String get(String key) {
         return PROPERTIES.getProperty(key);
     }
 
@@ -20,12 +22,10 @@ public final class PropertiesUtil {
         try (var inputStream = PropertiesUtil.class
                 .getClassLoader()
                 .getResourceAsStream("application.properties")) {
-                PROPERTIES.load(inputStream);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            PROPERTIES.load(inputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
     }
-
-    private PropertiesUtil() {}
 }
